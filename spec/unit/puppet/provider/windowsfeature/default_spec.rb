@@ -108,6 +108,22 @@ describe provider_class do
         provider.create
       end
     end
+
+    context 'with source' do
+      let(:resource) do
+        Puppet::Type.type(:windowsfeature).new(
+          title: 'feature-name',
+          source: 'C:\Windows\sxs',
+          provider: described_class.name
+        )
+      end
+
+      it 'runs Install-WindowsFeature with -Source' do
+        Facter.expects(:value).with(:kernelmajversion).returns('6.2')
+        Puppet::Type::Windowsfeature::ProviderDefault.expects('ps').with('Install-WindowsFeature feature-name -Source C:\Windows\sxs').returns('')
+        provider.create
+      end
+    end
   end
 
   describe 'destroy' do
