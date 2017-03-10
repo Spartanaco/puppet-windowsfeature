@@ -118,9 +118,25 @@ describe provider_class do
         )
       end
 
-      it 'runs Install-WindowsFeature with -Source' do
+      it 'runs Install-WindowsFeature with -Source C:\Windows\sxs' do
         Facter.expects(:value).with(:kernelmajversion).returns('6.2')
         Puppet::Type::Windowsfeature::ProviderDefault.expects('ps').with('Install-WindowsFeature feature-name -Source C:\Windows\sxs').returns('')
+        provider.create
+      end
+    end
+
+    context 'with restart' do
+      let(:resource) do
+        Puppet::Type.type(:windowsfeature).new(
+          title: 'feature-name',
+          restart: true,
+          provider: described_class.name
+        )
+      end
+
+      it 'runs Install-WindowsFeature with -Restart' do
+        Facter.expects(:value).with(:kernelmajversion).returns('6.2')
+        Puppet::Type::Windowsfeature::ProviderDefault.expects('ps').with('Install-WindowsFeature feature-name -Restart').returns('')
         provider.create
       end
     end
